@@ -1,0 +1,47 @@
+from functools import lru_cache
+from typing import Optional
+import os
+
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class BaseConfig(BaseSettings):
+    ENV_STATE: Optional[str] = None
+
+    """Loads the dotenv file. Including this is necessary to get
+    pydantic to load a .env file."""
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
+
+
+class GlobalConfig(BaseConfig):
+    USER: Optional[str] = None
+    PASSWORD: Optional[str] = None
+    ADDRESS: Optional[str] = None
+    PORT: Optional[str] = None
+    DATABASE: Optional[str] = None
+    DB_FORCE_ROLL_BACK: bool = False
+
+class DevConfig(GlobalConfig):
+    model_config = SettingsConfigDict(env_prefix="DEV_", extra="ignore")
+
+
+class ProdConfig(GlobalConfig):
+    model_config = SettingsConfigDict(env_prefix="PROD_", extra="ignore")
+
+
+class TestConfig(GlobalConfig):
+    model_config = SettingsConfigDict(env_prefix="TEST_", extra="ignore")
+
+
+@lru_cache()
+def get_config(env_state: str):
+    """Instantiate config based on the environment."""
+    configs = {
+        "dev": DevConfig,
+        "test": TestConfig,
+        "prod": ProdConfig
+    }
+    return configs.get(env_state, DevConfig)()
+
+env_state = BaseConfig().ENV_STATE
+config = get_config(env_state)
