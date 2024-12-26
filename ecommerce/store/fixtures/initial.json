@@ -1,0 +1,50 @@
+[
+    {
+      "model": "store.category",
+      "pk": 1,
+      "fields": {
+        "name": "default",
+        "slug": "default"
+      }
+    },
+    {
+      "model": "store.category",
+      "pk": 2,
+      "fields": {
+        "name": "Shoes",
+        "slug": "shoes"
+      }
+    },    
+    {
+      "model": "store.category",
+      "pk": 3,
+      "fields": {
+        "name": "Hats",
+        "slug": "hats"
+      }
+    },
+    {
+      "model": "store.brand",
+      "pk": 1,
+      "fields": {
+        "name": "default",
+        "slug": "default"
+      }
+    },
+    {
+      "model": "store.brand",
+      "pk": 2,
+      "fields": {
+        "name": "Nike",
+        "slug": "nike"
+      }
+    },    
+    {
+      "model": "store.brand",
+      "pk": 3,
+      "fields": {
+        "name": "Adidas",
+        "slug": "adidas"
+      }
+    }    
+  ]
