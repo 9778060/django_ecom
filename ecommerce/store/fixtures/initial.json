@@ -4,7 +4,8 @@
       "pk": 1,
       "fields": {
         "name": "default",
-        "slug": "default"
+        "slug": "default",
+        "show": false
       }
     },
     {
@@ -12,7 +13,8 @@
       "pk": 2,
       "fields": {
         "name": "Shoes",
-        "slug": "shoes"
+        "slug": "shoes",
+        "show": true
       }
     },    
     {
@@ -20,15 +22,26 @@
       "pk": 3,
       "fields": {
         "name": "Hats",
-        "slug": "hats"
+        "slug": "hats",
+        "show": true
       }
     },
+    {
+      "model": "store.category",
+      "pk": 4,
+      "fields": {
+        "name": "Shirts",
+        "slug": "shirts",
+        "show": true
+      }
+    },    
     {
       "model": "store.brand",
       "pk": 1,
       "fields": {
         "name": "default",
-        "slug": "default"
+        "slug": "default",
+        "show": false
       }
     },
     {
@@ -36,7 +49,8 @@
       "pk": 2,
       "fields": {
         "name": "Nike",
-        "slug": "nike"
+        "slug": "nike",
+        "show": true
       }
     },    
     {
@@ -44,7 +58,35 @@
       "pk": 3,
       "fields": {
         "name": "Adidas",
-        "slug": "adidas"
+        "slug": "adidas",
+        "show": true
       }
-    }    
+    },
+    {
+      "model": "store.brand",
+      "pk": 4,
+      "fields": {
+        "name": "H&M",
+        "slug": "hm",
+        "show": true
+      }
+    },
+    {
+      "model": "store.brand",
+      "pk": 5,
+      "fields": {
+        "name": "Reserved",
+        "slug": "reserved",
+        "show": true
+      }
+    },
+    {
+      "model": "store.brand",
+      "pk": 6,
+      "fields": {
+        "name": "Noname",
+        "slug": "noname",
+        "show": true
+      }
+    }            
   ]

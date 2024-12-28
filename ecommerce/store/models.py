@@ -47,6 +47,7 @@ class Brand(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=250, db_index=True, blank=False)
     slug = models.SlugField(max_length=250, unique=True, blank=False)
+    show = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "brands"
@@ -60,6 +61,7 @@ class Category(models.Model):
     id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=250, db_index=True, blank=False)
     slug = models.SlugField(max_length=250, unique=True, blank=False)
+    show = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "categories"
@@ -78,6 +80,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     image = models.ImageField(upload_to="images/")
     category = models.ForeignKey(Category, default=1, on_delete=SET_DEFAULT_AND_PREVENT_DELETE_DEFAULT_CATEGORY)
+    show = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "products"

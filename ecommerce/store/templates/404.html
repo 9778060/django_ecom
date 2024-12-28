@@ -1,0 +1,11 @@
+{% extends "base.html" %} 
+
+
+{% block title %}
+    <h1 class="nt-4 mb-4">Page Not Found</h1>
+{% endblock %} 
+
+{% block body %} 
+  <h2 class="nt-4 mb-4">Oops! Looks like the page doesn't exist anymore</h2> 
+  <a href="{% url 'index' %}"><p class="nt-4 mb-4">Click here</a> to go to the Home Page</p> 
+{% endblock %}

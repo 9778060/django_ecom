@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Store Main Page</h1>
+{% endblock %} 
+
+{% block body %}
+    <section class="pt-2 pb-4 text-center container">
+        <div class="row py-lg-2">
+            <div class="col-lg-6 col-md-8 mx-auto">
+                <div class="my-4">
+                    <h4>Django Store App...Simplicity at it's finest.</h4>
+                </div>
+                <div class="my-4">
+                    <p class="lead text-muted">Browse our extensive collection.</p>
+                </div>
+                <a href="{% url 'register' %}" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Create an account</a>
+            </div>
+        </div>
+    </section>
+    <div class="album py-5 bg-light">
+        <div class="container">
+            <div class="pb-3 h3">All products</div>
+            <hr>
+            <br>
+            {% include "products.html" %}
+        </div>
+    </div>       
+{% endblock %}
