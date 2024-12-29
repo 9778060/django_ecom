@@ -4,7 +4,6 @@
             Django Store App 
         </a>
 
-
         <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav me-auto mb-2 mb-md-0">
                 <li class="nav-item dropdown">
@@ -16,8 +15,7 @@
                         <li>
                             <a class="dropdown-item {% if request.path == '/' %}active{% endif %}" href="{% url 'index' %}">All categories</a>
                             {% for category in all_categories %}
-                                {% url 'show_category' cat=category.slug as the_url %}
-                                <a class="dropdown-item {% if request.path == the_url %}active{% endif %}" href="{{ the_url }}">{{ category.name|capfirst }}</a>
+                                <a class="dropdown-item {% if request.path == category.get_absolute_url %}active{% endif %}" href="{{ category.get_absolute_url }}">{{ category.name|capfirst }}</a>
                             {% endfor %}
                         </li>
                     </ul>
@@ -31,8 +29,7 @@
                         <li>
                             <a class="dropdown-item {% if request.path == '/' %}active{% endif %}" href="{% url 'index' %}">All brands</a>
                             {% for brand in all_brands %}
-                                {% url 'show_brand' brand=brand.slug as the_url %}
-                                <a class="dropdown-item {% if request.path == the_url %}active{% endif %}" href="{{ the_url }}">{{ brand.name|capfirst }}</a>
+                                <a class="dropdown-item {% if request.path == brand.get_absolute_url %}active{% endif %}" href="{{ brand.get_absolute_url }}">{{ brand.name|capfirst }}</a>
                             {% endfor %}
                         </li>
                     </ul>
@@ -45,7 +42,6 @@
                 </li>            
             </ul>
         </div>
-
         
         <button
             class="navbar-toggler"
@@ -57,7 +53,6 @@
             aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>    
-
         
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ms-auto mb-2">
@@ -74,6 +69,5 @@
                 </li>
             </ul>
         </div>
-        
     </div>        
 </nav>

@@ -5,12 +5,14 @@
 {% endblock %} 
 
 {% block body %}
-<div class="album py-5 bg-light">
-    <div class="container">
-        <div class="pb-3 h3">{{ selected_brand|capfirst }}</div>
-        <hr>
-        <br>
-        {% include "products.html" %}
-    </div>
-</div>    
+    <main>
+        <div class="album py-5 bg-light">
+            <div class="container">
+                <div class="pb-3 h5">{{ selected_brand|capfirst }}</div>
+                <hr>
+                <br>
+                {% include "products.html" %}
+            </div>
+        </div>
+    </main>
 {% endblock %}

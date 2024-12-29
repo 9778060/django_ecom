@@ -35,17 +35,17 @@ def all_categories_brands(request):
 
 
 def show_category(request, cat):
-    selected_category = get_object_or_404(Category, slug=cat)
-    selected_products = Product.objects.filter(category=selected_category)
+    selected_category = get_object_or_404(Category, slug=cat, show=True)
+    selected_products = Product.objects.filter(category=selected_category, show=True).order_by("-id")
     return render(request, "category.html", context={"selected_category": selected_category, "selected_products": selected_products})
 
 
 def show_brand(request, brand):
-    selected_brand = get_object_or_404(Brand, slug=brand)
-    selected_products = Product.objects.filter(brand=selected_brand)
+    selected_brand = get_object_or_404(Brand, slug=brand, show=True)
+    selected_products = Product.objects.filter(brand=selected_brand, show=True).order_by("-id")
     return render(request, "brand.html", context={"selected_brand": selected_brand, "selected_products": selected_products})
 
 
 def show_details(request, product):
-    selected_product = get_object_or_404(Product, slug=product)
+    selected_product = get_object_or_404(Product, slug=product, show=True)
     return render(request, "details.html", context={"selected_product": selected_product})

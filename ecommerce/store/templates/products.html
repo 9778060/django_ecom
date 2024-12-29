@@ -1,9 +1,8 @@
 
 <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3">
     {% for product in selected_products %}
-        {% url 'show_details' product=product.slug as the_url %}
         <div class="col">
-            <a class="card shadow-sm text-decoration-none" type="button" role="button" href="{{ the_url }}">
+            <a class="card shadow-sm text-decoration-none" type="button" role="button" href="{{ product.get_absolute_url }}">
                 <img class="img-fluid" alt="Responsive image" src="{{ product.image.url }}">
                 <div class="card-body">
                     <p class="card-text" style="width: 100%">{{ product }}</p>

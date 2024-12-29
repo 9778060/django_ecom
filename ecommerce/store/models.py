@@ -1,4 +1,5 @@
 from django.db import models, InternalError
+from django.urls import reverse
 
 
 def SET_DEFAULT_AND_PREVENT_DELETE_DEFAULT_BRAND(collector, field, sub_objs, using):
@@ -54,7 +55,11 @@ class Brand(models.Model):
 
     def __str__(self):
         return f"{self.name}"
-    
+
+    @property
+    def get_absolute_url(self):
+        return reverse("show_brand", args=(self.slug, ))
+        
 
 class Category(models.Model):
 
@@ -68,6 +73,10 @@ class Category(models.Model):
 
     def __str__(self):
         return f"{self.name}"
+
+    @property
+    def get_absolute_url(self):
+        return reverse("show_category", args=(self.slug, ))
 
 
 class Product(models.Model):
@@ -87,3 +96,7 @@ class Product(models.Model):
 
     def __str__(self):
         return f"{self.title} ({self.category}/{self.brand})"
+    
+    @property
+    def get_absolute_url(self):
+        return reverse("show_details", args=(self.slug, ))
