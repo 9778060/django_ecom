@@ -1,0 +1,33 @@
+from django.shortcuts import render, get_object_or_404
+from .cart import Cart
+from store.models import Product
+from django.http import JsonResponse
+
+
+def cart_summary(request):
+    return render(request, "cart_summary.html")
+
+
+def cart_add(request):
+    response = JsonResponse({"empty": ""})
+
+    if request.POST.get("action") == "post":
+        existing_cart = Cart(request)
+        product_id = int(request.POST.get("product_id"))
+        product_qty = int(request.POST.get("product_qty"))
+
+        if selected_product := get_object_or_404(Product, id=product_id):
+            dict_to_add = existing_cart.add_to_cart(selected_product, product_qty)
+
+            response = JsonResponse(dict_to_add)
+
+    return response
+
+
+def cart_delete(request):
+    pass
+
+
+def cart_update(request):
+    pass
+
