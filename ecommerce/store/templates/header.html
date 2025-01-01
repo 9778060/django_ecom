@@ -65,6 +65,11 @@
                 <li class="nav-item ms-2 mt-2">
                     <a type="button" role="button" href="{% url 'cart_summary' %}" class="btn btn-outline-secondary"> 
                         <i class="fa fa-shopping-cart" style="color: #63E6BE;" aria-hidden="true"></i>
+                        {% with cart_qty=cart|length %}
+                            {% if cart_qty > 0 %}
+                                <div id="cart-qty" class="mx-2 px-2 d-inline-flex" style="background-color: #63E6BE; color:black">{{ cart_qty }}</div>
+                            {% endif %}
+                        {% endwith %}                                
                     </a>
                 </li>
             </ul>

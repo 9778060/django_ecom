@@ -9,17 +9,19 @@ def cart_summary(request):
 
 
 def cart_add(request):
-    response = JsonResponse({"empty": ""})
+    response = JsonResponse({"empty": None})
 
     if request.POST.get("action") == "post":
         existing_cart = Cart(request)
         product_id = int(request.POST.get("product_id"))
         product_qty = int(request.POST.get("product_qty"))
 
-        if selected_product := get_object_or_404(Product, id=product_id):
-            dict_to_add = existing_cart.add_to_cart(selected_product, product_qty)
+        # if selected_product := get_object_or_404(Product, id=product_id, show=True):
+        #     dict_to_add = existing_cart.add_to_cart(selected_product, product_qty)
+        #     response = JsonResponse(dict_to_add)
 
-            response = JsonResponse(dict_to_add)
+        dict_to_add = existing_cart.add_to_cart(product_id, product_qty)
+        response = JsonResponse(dict_to_add)
 
     return response
 
