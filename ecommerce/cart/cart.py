@@ -10,11 +10,13 @@ class Cart:
         if "session_details" not in self.session:
             self.session["session_details"] = {}
 
-        self.shopping_cart = deepcopy(self.session.get("session_details"))
         self._cart_validation()
 
 
     def _cart_validation(self):
+        
+        self.shopping_cart = self.session.get("session_details", {})
+
         all_product_keys = self.shopping_cart.keys()
         products = Product.objects.filter(id__in=all_product_keys, show=True)
 
@@ -35,6 +37,7 @@ class Cart:
         for key in self.session["session_details"]:
             try:
                 del self.session["session_details"][key]["product"]
+                del self.session["session_details"][key]["total"]
             except KeyError as exc:
                 continue
 
