@@ -50,6 +50,9 @@
             </div>
             {% endwith %}
         {% endfor %}
+        <div class="col-12 text-start">
+            <button type="button" id="delete-all" class="btn btn-danger btn-sm">Clear cart</button>
+        </div>            
         <div class="col-12 text-end">
             <div class="h6 fw-bold"> Sub total: $ <div id="total" class="d-inline-flex">{{ cart.cart_total_amount }}</div></div>
         </div>
@@ -95,7 +98,26 @@
 
             },
         });
-    })    
+    })  
+    $(document).on("click", "#delete-all", function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'cart_delete' %}",
+            data: {
+                product_id: "",
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: "post"
+            },
+            success: function(json){
+                // console.log(json);
+                location.reload();
+            },
+            error: function(xhr, errmsg, err){
+
+            },
+        });
+    })
 
 </script> 
 {% endblock %}

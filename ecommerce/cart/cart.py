@@ -48,11 +48,14 @@ class Cart:
         return dict_to_add
 
 
-    def delete_from_cart(self, product_id):
-        try:
-            del self.session["session_details"][product_id]
-        except KeyError as exc:
-            pass
+    def delete_from_cart(self, product_id=None):
+        if not product_id:
+            del self.session["session_details"]
+        else:
+            try:
+                del self.session["session_details"][product_id]
+            except KeyError as exc:
+                pass
 
 
     @property
