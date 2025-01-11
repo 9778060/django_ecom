@@ -24,14 +24,14 @@
                         <div class="col border-bottom">
                             <div class="row p-3">
                                 <div class="col-6">Product</div>
-                                <div class="col-6 text-end"><span class="h6 fw-bold">$ {{ item.price }}</span></div>
+                                <div class="col-6 text-end"><span class="h6 fw-bold">$ {{ product.price }} (price) * {{ item.qty }} (quantity) = $ {{ item.total }} (total)</span></div>
                             </div>
                         </div>
                         <div class="col">
                             <div class="row p-3">
                                 <div class="col-12">
                                     <label for="select">Qty</label>
-                                    <select id="">
+                                    <select id="select-{{ product.id }}">
                                         <option selected>{{ item.qty }}</option>
                                         <option value="">1</option>
                                         <option value="">2</option>
@@ -40,8 +40,8 @@
                                     </select>
                                     <br>
                                     <br>
-                                    <button type="button" id="update-button" class="btn btn-primary btn-sm update-button">Update</button>
-                                    <button type="button" id="delete-button" class="btn btn-danger btn-sm delete-button">Delete</button>
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-primary btn-sm update-button">Update</button>
+                                    <button type="button" data-index="{{ product.id }}" class="btn btn-danger btn-sm delete-button">Delete</button>
                                 </div>
                             </div>
                         </div>
@@ -55,5 +55,47 @@
         </div>
 
     </div>
- </main>
+</main>
+<script>
+    $(document).on("click", ".delete-button", function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'cart_delete' %}",
+            data: {
+                product_id: $(this).data("index"),
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: "post"
+            },
+            success: function(json){
+                // console.log(json);
+                location.reload();
+            },
+            error: function(xhr, errmsg, err){
+
+            },
+        });
+    })
+    $(document).on("click", ".update-button", function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'cart_update' %}",
+            data: {
+                product_id: $(this).data("index"),
+                product_qty: $("#select-" + $(this).data("index") + " option:selected").text(),
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: "post"
+            },
+            success: function(json){
+                // console.log(json);
+                location.reload();
+            },
+            error: function(xhr, errmsg, err){
+
+            },
+        });
+    })    
+
+</script> 
 {% endblock %}
