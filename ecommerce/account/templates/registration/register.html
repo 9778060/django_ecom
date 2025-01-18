@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Register</h1>
+{% endblock %} 
+
+{% block body %}
+<body class="bg-light">
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h3>Create an account</h3>
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
+            {{ form.username|as_crispy_field }}
+            {{ form.email|as_crispy_field }}
+            {{ form.password1|as_crispy_field }}
+            {{ form.password2|as_crispy_field }}
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Register</button>
+            </div>
+        </form>
+        
+    </div>
+</body>
+
+{% endblock %}
