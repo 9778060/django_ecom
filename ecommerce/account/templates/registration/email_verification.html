@@ -6,7 +6,7 @@
 
 {% block body %}
 <body class="bg-light">
-    <div class="container bg-white shadow-md p-5 form-layout">
+    <div class="container bg-white shadow-md p-5 form-layout text-center">
         {% if result == "sent" %}
             <i class="fa fa-envelope fa-3x pb-4" aria-hidden="true"></i>
             <h4>Verification link has been sent to your email</h4>
@@ -14,9 +14,11 @@
             <p>Please check your email</p>
         {% endif %}
         {% if result == "success" %}
+            <i class="fa fa-check fa-3x pb-4 text-success" aria-hidden="true"></i>
             <h4>Email verification succeeded!</h4>
         {% endif %}
         {% if result == "fail" %}
+            <i class="fa fa-times fa-3x pb-4 text-danger" aria-hidden="true"></i>
             <h4>Email verification failed!</h4>
         {% endif %}
     </div>
