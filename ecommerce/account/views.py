@@ -7,6 +7,7 @@ from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
 from django.contrib.auth.models import User
 from django.core.mail import EmailMultiAlternatives, send_mail
+from django.http import Http404
 
 
 def register(request):
@@ -25,7 +26,7 @@ def register(request):
                 "user": user,
                 "domain": get_current_site(request).domain,
                 "uid": urlsafe_base64_encode(force_bytes(user.pk)),
-                "username": urlsafe_base64_encode(force_bytes(user.username)),
+                "uemail": urlsafe_base64_encode(force_bytes(user.email)),
                 "token": user_tokenizer.make_token(user)
             }
             message = render_to_string("registration/email_verification.html", context=context)
@@ -47,10 +48,17 @@ def register(request):
     return render(request, "registration/register.html", context=context)
     
 
-def email_verification(request, uidb64, usernameb64, token):
-    uid = force_str(urlsafe_base64_decode(uidb64))
-    username = force_str(urlsafe_base64_decode(usernameb64))
-    user = get_object_or_404(User, pk=uid, username=username, is_active=False, is_staff=False, is_superuser=False)
+def email_verification(request, uidb64, uemailb64, token):
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        uemail = force_str(urlsafe_base64_decode(uemailb64))
+    except Exception as exc:
+        return redirect("email_verification_fail")
+    
+    try:
+        user = get_object_or_404(User, pk=uid, email=uemail, is_active=False, is_staff=False, is_superuser=False)
+    except Exception as exc:
+        return redirect("email_verification_fail")
 
     if user and user_tokenizer.check_token(user=user, token=token):
         user.is_active = True
