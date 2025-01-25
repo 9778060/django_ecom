@@ -29,7 +29,7 @@ def register(request):
                 "uemail": urlsafe_base64_encode(force_bytes(user.email)),
                 "token": user_tokenizer.make_token(user)
             }
-            message = render_to_string("registration/email_verification.html", context=context)
+            message = render_to_string("registration/email_verification_message.html", context=context)
 
             send_mail(
                 subject=subject,
@@ -39,7 +39,7 @@ def register(request):
                 fail_silently=True,
             )
 
-            return redirect("email_verification_sent")
+            return render(request, "registration/email_verification.html", context={"result": "sent"})
         else:
             form = registration_form
 
@@ -53,28 +53,17 @@ def email_verification(request, uidb64, uemailb64, token):
         uid = force_str(urlsafe_base64_decode(uidb64))
         uemail = force_str(urlsafe_base64_decode(uemailb64))
     except Exception as exc:
-        return redirect("email_verification_fail")
+        return render(request, "registration/email_verification.html", context={"result": "fail"})
     
     try:
         user = get_object_or_404(User, pk=uid, email=uemail, is_active=False, is_staff=False, is_superuser=False)
     except Exception as exc:
-        return redirect("email_verification_fail")
+        return render(request, "registration/email_verification.html", context={"result": "fail"})
 
     if user and user_tokenizer.check_token(user=user, token=token):
         user.is_active = True
         user.save()
-        return redirect("email_verification_success")
+        return render(request, "registration/email_verification.html", context={"result": "success"})
     else:
-        return redirect("email_verification_fail")
+        return render(request, "registration/email_verification.html", context={"result": "fail"})
 
-
-def email_verification_sent(request):
-    return render(request, "registration/email_verification_sent.html")
-
-
-def email_verification_success(request):
-    return render(request, "registration/email_verification_success.html")
-
-
-def email_verification_fail(request):
-    return render(request, "registration/email_verification_fail.html")
