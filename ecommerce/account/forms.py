@@ -4,7 +4,7 @@ from django import forms
 
 
 class CreateUserForm(UserCreationForm):
-
+   
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
@@ -12,8 +12,6 @@ class CreateUserForm(UserCreationForm):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.is_staff = False
-        self.is_superuser = False
         self.fields["email"].required = True
         self.fields["password1"].required = True
         self.fields["password2"].required = True
