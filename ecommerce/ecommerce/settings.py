@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "account",
     "crispy_forms",
     "crispy_bootstrap5",
+    "anymail",
 ]
 
 MIDDLEWARE = [
@@ -148,3 +149,13 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
 
 CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+EMAIL_BACKEND = "anymail.backends.mailgun.EmailBackend"
+ANYMAIL = {
+"MAILGUN_API_KEY": os.getenv("MAILGUN_APIKEY"),
+"MAILGUN_SENDER_DOMAIN": os.getenv("MAILGUN_DOMAIN"),
+
+}
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = os.getenv("MAILGUN_DEFAULT_FROM_EMAIL")
+SERVER_EMAIL = os.getenv("MAILGUN_SERVER_MAIL")
