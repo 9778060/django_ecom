@@ -56,22 +56,21 @@
         
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ms-auto mb-2">
-                <li class="nav-item ms-2 mt-2">
-                    {% if not user.is_anonymous %}
-                        <a class="nav-link {% if request.path == '/account/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
-                    {% else %}
+                {% if user.is_anonymous %}
+                    <li class="nav-item ms-2 mt-2">
                         <a class="nav-link {% if request.path == '/account/register/' %}active{% endif %}" href="{% url 'register' %}">Register</a>
-                    {% endif %}
-                </li>
-                <li class="nav-item ms-2 mt-2">
-
-                    {% if not user.is_anonymous %}
-                        <a class="nav-link logout-button" href="#">Log out</a>
-                    {% else %}
+                    </li>
+                    <li class="nav-item ms-2 mt-2">
                         <a class="nav-link {% if request.path == '/account/login/' %}active{% endif %}" href="{% url 'login' %}">Login</a>
-                    {% endif %}                    
-                    
-                </li>
+                    </li>
+                {% else %}
+                    <li class="nav-item ms-2 mt-2">
+                        <a class="nav-link {% if request.path == '/account/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+                    </li>
+                    <li class="nav-item ms-2 mt-2">
+                        <a class="nav-link {% if request.path == '/account/logout/' %}active{% endif %}" href="{% url 'logout' %}">Log out</a>
+                    </li>
+                {% endif %}                    
                 <li class="nav-item ms-2 mt-2">
                     <a type="button" role="button" href="{% url 'cart_summary' %}" class="btn btn-outline-secondary"> 
                         <i class="fa fa-shopping-cart" style="color: #63E6BE;" aria-hidden="true"></i>
@@ -86,24 +85,3 @@
         </div>
     </div>        
 </nav>
-<script>
-    $(document).on("click", ".logout-button", function(e){
-        e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: "{% url 'logout' %}",
-            data: {
-                csrfmiddlewaretoken: "{{ csrf_token }}",
-                action: "post"
-            },
-            success: function(json){
-                // console.log(json);
-                location.reload(true);
-            },
-            error: function(xhr, errmsg, err){
-
-            },
-        });
-    })
-
-</script> 

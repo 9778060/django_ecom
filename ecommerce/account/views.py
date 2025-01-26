@@ -102,9 +102,6 @@ def dashboard(request):
 
 
 def logout(request):
-    response = JsonResponse({"empty": None})
+    auth.logout(request)
 
-    if request.POST.get("action") == "post":
-        auth.logout(request)
-
-    return response
+    return redirect("index")
