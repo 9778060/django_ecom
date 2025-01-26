@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Dashboard</h1>
+{% endblock %} 
+
+{% block body %}
+<body class="bg-light">
+    <div class="container bg-white shadow-md p-5 form-layout text-center">
+        {% if not user.is_anonymous %}
+            <h4>Welcome!</h4>
+            {{ user }}
+            <br>
+            <button type="button" class="btn btn-danger btn-sm logout-button">Log out</button>
+        {% else %}
+            <script>
+                window.location.replace("{% url 'index' %}");
+            </script>
+        {% endif %}
+    </div>
+</body>
+<script>
+    $(document).on("click", ".logout-button", function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'logout' %}",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: "post"
+            },
+            success: function(json){
+                // console.log(json);
+                location.reload(true);
+            },
+            error: function(xhr, errmsg, err){
+
+            },
+        });
+    })
+
+</script> 
+{% endblock %}

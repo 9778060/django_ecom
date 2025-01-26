@@ -1,13 +1,15 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CreateUserForm
+from .forms import CreateUserForm, LoginForm
 from django.contrib.sites.shortcuts import get_current_site
 from .token import user_tokenizer
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes, force_str
 from django.utils.http import urlsafe_base64_decode, urlsafe_base64_encode
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, auth
 from django.core.mail import EmailMultiAlternatives, send_mail
-from django.http import Http404
+from django.http import Http404, JsonResponse
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 
 
 def register(request):
@@ -41,6 +43,7 @@ def register(request):
 
             return render(request, "registration/email_verification.html", context={"result": "sent"})
         else:
+            messages.add_message(request, messages.ERROR, "Couldn't register the user")
             form = registration_form
 
     context = {"form": form}
@@ -67,3 +70,40 @@ def email_verification(request, uidb64, uemailb64, token):
     else:
         return render(request, "registration/email_verification.html", context={"result": "fail"})
 
+
+def login(request):
+    form = LoginForm()
+
+    if request.method == "POST":
+        login_form = LoginForm(request, data=request.POST)
+
+        if login_form.is_valid():
+            
+            username = login_form.cleaned_data.get("username")
+            password = login_form.cleaned_data.get("password")
+
+            user = authenticate(request, username=username, password=password)
+
+            if user and user.is_active and not user.is_staff and not user.is_superuser:
+                auth.login(request, user)
+                return redirect("dashboard")
+        
+        messages.add_message(request, messages.ERROR, "Couldn't authenticate the user")
+
+
+    context = {"form": form}
+
+    return render(request, "login.html", context=context)
+
+
+def dashboard(request):
+    return render(request, "dashboard.html")
+
+
+def logout(request):
+    response = JsonResponse({"empty": None})
+
+    if request.POST.get("action") == "post":
+        auth.logout(request)
+
+    return response
