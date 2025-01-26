@@ -10,6 +10,7 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 from django.http import Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 
 
 def register(request):
@@ -97,11 +98,12 @@ def login(request):
     return render(request, "login.html", context=context)
 
 
-def dashboard(request):
-    return render(request, "dashboard.html")
-
-
 def logout(request):
     auth.logout(request)
 
     return redirect("index")
+
+
+@login_required(login_url="login")
+def dashboard(request):
+    return render(request, "dashboard.html")

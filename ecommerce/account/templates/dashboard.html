@@ -6,15 +6,25 @@
 
 {% block body %}
 <body class="bg-light">
-    <div class="container bg-white shadow-md p-5 form-layout text-center">
-        {% if not user.is_anonymous %}
-            <h4>Welcome!</h4>
-            <p class="py-4">{{ user }}</p>
-        {% else %}
-            <script>
-                window.location.replace("{% url 'index' %}");
-            </script>
-        {% endif %}
+    {% if not user.is_anonymous %}
+    <div class="container bg-white shadow-md p-5 form-layout mb-4">
+        <h4>Welcome, {{ user }}</h4>
+        <hr>
+        <p>Here you can do the following:</p>
+        <li class="pb-2">Track your orders</li>
+        <li class="pb-2">Manage your account</li>
     </div>
+    <div class="container bg-white shadow-md p-5 py-4 form-layout mb-4">
+        <h5>Track your orders</h5>
+        <hr>
+        <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'cart_summary' %}" class="btn btn-dark" style="background-color: #63E6BE; color:black">Manage orders</a></p>
+    </div>
+    <div class="container bg-white shadow-md p-5 py-4 form-layout mb-4">
+        <h5>Manage your account</h5>
+        <hr>
+        <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'cart_summary' %}" class="btn btn-dark" style="background-color: #63E6BE; color:black">Update profile</a></p>
+        <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'logout' %}" class="btn btn-danger">Log out</a></p>
+    </div>    
+    {% endif %}
 </body>
 {% endblock %}
