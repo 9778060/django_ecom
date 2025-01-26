@@ -86,6 +86,7 @@ def login(request):
 
             if user and user.is_active and not user.is_staff and not user.is_superuser:
                 auth.login(request, user)
+
                 return redirect("dashboard")
         
         messages.add_message(request, messages.ERROR, "Couldn't authenticate the user")

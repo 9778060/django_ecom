@@ -9,9 +9,7 @@
     <div class="container bg-white shadow-md p-5 form-layout text-center">
         {% if not user.is_anonymous %}
             <h4>Welcome!</h4>
-            {{ user }}
-            <br>
-            <button type="button" class="btn btn-danger btn-sm logout-button">Log out</button>
+            <p class="py-4">{{ user }}</p>
         {% else %}
             <script>
                 window.location.replace("{% url 'index' %}");
@@ -19,25 +17,4 @@
         {% endif %}
     </div>
 </body>
-<script>
-    $(document).on("click", ".logout-button", function(e){
-        e.preventDefault();
-        $.ajax({
-            type: "POST",
-            url: "{% url 'logout' %}",
-            data: {
-                csrfmiddlewaretoken: "{{ csrf_token }}",
-                action: "post"
-            },
-            success: function(json){
-                // console.log(json);
-                location.reload(true);
-            },
-            error: function(xhr, errmsg, err){
-
-            },
-        });
-    })
-
-</script> 
 {% endblock %}
