@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Profile management</h1>
+{% endblock %} 
+
+{% block body %}
+<body class="bg-light">
+    {% if not user.is_anonymous %}
+    <div class="container bg-white shadow-md p-5 py-4 form-layout mb-4">
+        <h5>Manage your account</h5>
+        <hr>
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
+            {{ form.email|as_crispy_field }}
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Update</button>
+            </div>
+        </form>        
+        <hr>
+        <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'delete_account' %}" class="btn btn-danger">Delete account</a></p>
+    </div>    
+    {% endif %}
+</body>
+{% endblock %}
