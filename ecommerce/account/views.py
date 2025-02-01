@@ -10,7 +10,7 @@ from django.core.mail import EmailMultiAlternatives, send_mail
 from django.http import Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import UserEmails
 
 
@@ -97,15 +97,19 @@ def email_verification(request, uidb64, uemailb64, token):
                 user_email_record.verified = True
                 user_email_record.save()
 
-            user.email = uemail
-            user.is_active = True
-            user.save()
+                user.email = uemail
+
+                if user_email_record.registration_verification:
+                    user.is_active = True
+
+                user.save()
         except Exception as exc:
             return render(request, "registration/email_verification.html", context={"result": "fail"})
 
         return render(request, "registration/email_verification.html", context={"result": "success"})
     else:
         return render(request, "registration/email_verification.html", context={"result": "fail"})
+
 
 
 def login(request):
@@ -140,11 +144,13 @@ def logout(request):
     return redirect("index")
 
 
+@user_passes_test(lambda user: user.is_active and not user.is_staff and not user.is_superuser, login_url="login")
 @login_required(login_url="login")
 def dashboard(request):
     return render(request, "dashboard.html")
 
 
+@user_passes_test(lambda user: user.is_active and not user.is_staff and not user.is_superuser, login_url="login")
 @login_required(login_url="login")
 def profile_management(request):
 
@@ -163,7 +169,6 @@ def profile_management(request):
 
                 return render(request, "registration/email_verification.html", context={"result": "sent"})
 
-
             else:
                 messages.add_message(request, messages.ERROR, "Cannot update the same details")
 
@@ -177,7 +182,15 @@ def profile_management(request):
     return render(request, "profile_management.html", context=context)
 
 
-
+@user_passes_test(lambda user: user.is_active and not user.is_staff and not user.is_superuser, login_url="login")
 @login_required(login_url="login")
 def delete_account(request):
-    return render(request, "delete_account.html")
+
+    try:
+        current_user = User.objects.get(username=request.user)
+        current_user.is_active = False
+        current_user.save()
+
+        return render(request, "delete_account.html", context={"result": "success"})
+    except Exception as exc:
+        return render(request, "delete_account.html", context={"result": "fail"})
