@@ -14,7 +14,15 @@ from django.contrib.auth.decorators import login_required
 from .models import UserEmails
 
 
-def _send_verification_email(request, user, email):
+def _send_verification_email(request, user, email, *, registration_verification=False):
+
+    new_record = UserEmails()
+    new_record.user = user
+    new_record.email = email
+    new_record.verified = False
+    new_record.registration_verification = registration_verification
+    new_record.save()
+    
     subject = "Account verification email"
     context = {
         "user": user,
@@ -45,13 +53,7 @@ def register(request):
         if registration_form.is_valid():
             user = registration_form.save()
 
-            new_record = UserEmails()
-            new_record.user = user
-            new_record.email = user.email
-            new_record.verified = False
-            new_record.save()
-
-            _send_verification_email(request, user, user.email)
+            _send_verification_email(request, user, user.email, registration_verification=True)
 
             return render(request, "registration/email_verification.html", context={"result": "sent"})
         else:
@@ -69,13 +71,16 @@ def email_verification(request, uidb64, uemailb64, token):
         uemail = force_str(urlsafe_base64_decode(uemailb64))
     except Exception as exc:
         return render(request, "registration/email_verification.html", context={"result": "fail"})
-    
+
     try:
         user = get_object_or_404(User, pk=uid, email=uemail, is_active=False, is_staff=False, is_superuser=False)
     except Exception as exc:
         try:
             user = get_object_or_404(User, pk=uid, is_active=True, is_staff=False, is_superuser=False)
-            user_email_record = get_object_or_404(UserEmails, email=uemail, verified=False, user_id=user.pk)
+            user_email_record = UserEmails.objects.filter(email=uemail, verified=False, user_id=user.pk)
+
+            if not user_email_record:
+                return render(request, "registration/email_verification.html", context={"result": "fail"})    
         except Exception as exc:
             return render(request, "registration/email_verification.html", context={"result": "fail"})
 
@@ -86,8 +91,8 @@ def email_verification(request, uidb64, uemailb64, token):
             if not_unique_email_check:
                 return render(request, "registration/email_verification.html", context={"result": "fail"})
 
-            user_email_record = get_object_or_404(UserEmails, email=uemail, verified=False, user_id=user.pk)
-            
+            user_email_record = UserEmails.objects.filter(email=uemail, verified=False, user_id=user.pk).order_by("-date_sent")[:1].get()
+
             if user_email_record:
                 user_email_record.verified = True
                 user_email_record.save()
@@ -154,24 +159,10 @@ def profile_management(request):
 
             if existing_email != new_email:
 
-                user_email_records = UserEmails.objects.filter(email=existing_email, verified=True, user_id=current_user.pk)
+                _send_verification_email(request, current_user, new_email)
 
-                if user_email_records:
-                    new_user_email_records = UserEmails.objects.filter(email=new_email, verified=False, user_id=current_user.pk)
+                return render(request, "registration/email_verification.html", context={"result": "sent"})
 
-                    if not new_user_email_records:
-                        new_record = UserEmails()
-                        new_record.user = current_user
-                        new_record.email = new_email
-                        new_record.verified = False
-                        new_record.save()
-
-                    _send_verification_email(request, current_user, new_email)
-
-                    return render(request, "registration/email_verification.html", context={"result": "sent"})
-
-                else:
-                    messages.add_message(request, messages.ERROR, "Existing details weren't verified")
 
             else:
                 messages.add_message(request, messages.ERROR, "Cannot update the same details")

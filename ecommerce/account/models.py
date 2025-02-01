@@ -9,6 +9,7 @@ class UserEmails(models.Model):
     email = models.EmailField(max_length=250, blank=False)
     verified = models.BooleanField(default=True)
     date_sent = models.DateTimeField(auto_now=True)
+    registration_verification = models.BooleanField(default=True)
 
     class Meta:
         verbose_name_plural = "email history"
