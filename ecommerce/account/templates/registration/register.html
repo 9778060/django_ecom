@@ -9,7 +9,8 @@
 {% block body %}
 <body class="bg-light">
     <div class="container bg-white shadow-md p-5 form-layout">
-        <h3>Create an account</h3>
+        <h4>Create an account</h4>
+        <hr>
         <form method="POST" autocomplete="off">
             {% csrf_token %}
             {{ form.username|as_crispy_field }}
@@ -20,7 +21,9 @@
                 <button type="submit" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Register</button>
             </div>
         </form>
-        
+        <div class="text-center mt-3">
+            <a href="{% url 'login' %}">Already have an account?</a>
+        </div>        
     </div>
 </body>
 

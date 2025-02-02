@@ -53,3 +53,16 @@ class UpdateUserForm(forms.ModelForm):
             raise forms.ValidationError("Cannot update the same details")
 
         return email
+    
+
+class ForgotPasswordUserForm(forms.ModelForm):
+    
+    class Meta:
+        model = User
+        fields = ["email"]
+        exclude = ["username", "password"]
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["email"].required = True

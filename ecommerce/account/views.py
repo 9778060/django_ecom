@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CreateUserForm, LoginForm, UpdateUserForm
+from .forms import CreateUserForm, LoginForm, UpdateUserForm, ForgotPasswordUserForm
 from django.contrib.sites.shortcuts import get_current_site
 from .token import user_tokenizer
 from django.template.loader import render_to_string
@@ -186,3 +186,26 @@ def delete_account(request):
         return render(request, "delete_account.html", context={"result": "success"})
     except Exception as exc:
         return render(request, "delete_account.html", context={"result": "fail"})
+
+
+@user_passes_test(lambda user: not user.is_authenticated, login_url="dashboard")
+def forgot_your_password(request):
+
+    forgot_your_password_form = ForgotPasswordUserForm()
+    
+    if request.method == "POST":
+        forgot_your_password_form = ForgotPasswordUserForm(request.POST)
+
+        if forgot_your_password_form.is_valid():
+
+            # _send_verification_email(request, current_user, current_user.email)
+
+            return render(request, "password_reset/password_reset.html", context={"result": "sent"})
+
+        else:
+            messages.add_message(request, messages.ERROR, "Invalid email has been entered")
+
+    form = forgot_your_password_form
+    context = {"form": form}
+
+    return render(request, "password_reset/forgot_your_password.html", context=context)
