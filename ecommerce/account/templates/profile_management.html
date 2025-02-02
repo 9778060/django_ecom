@@ -8,18 +8,24 @@
 
 {% block body %}
 <body class="bg-light">
-    {% if not user.is_anonymous %}
+    {% if user.is_authenticated %}
     <div class="container bg-white shadow-md p-5 py-4 form-layout mb-4">
-        <h5>Manage your account</h5>
+        <h5>Update your account</h5>
         <hr>
         <form method="POST" autocomplete="off">
             {% csrf_token %}
             {{ form.email|as_crispy_field }}
             <button type="submit" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Update</button>
         </form>        
+    </div>    
+    <div class="container bg-white shadow-md p-5 py-4 form-layout mb-4">
+        <h5>Delete your account</h5>
         <hr>
         <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'delete_account' %}" class="btn btn-danger">Delete account</a></p>
     </div>    
+    <div class="container form-layout">
+        <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'dashboard' %}" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Go back</a></p>
+    </div>        
     {% endif %}
 </body>
 {% endblock %}

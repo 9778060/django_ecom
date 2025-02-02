@@ -56,9 +56,9 @@
         
         <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav ms-auto mb-2">
-                {% if not user.is_anonymous and not user.is_staff and not user.is_superuser %}
+                {% if user.is_authenticated and not user.is_staff and not user.is_superuser %}
                     <li class="nav-item ms-2 mt-2">
-                        <a class="nav-link {% if request.path == '/account/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard</a>
+                        <a class="nav-link {% if request.path == '/account/dashboard/' %}active{% endif %}" href="{% url 'dashboard' %}">Dashboard ({{ user }})</a>
                     </li>
                     <li class="nav-item ms-2 mt-2">
                         <a class="nav-link {% if request.path == '/account/logout/' %}active{% endif %}" href="{% url 'logout' %}">Log out</a>

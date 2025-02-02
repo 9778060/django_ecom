@@ -160,21 +160,13 @@ def profile_management(request):
         update_form = UpdateUserForm(request.POST, instance=current_user)
 
         if update_form.is_valid():
-            existing_email = User.objects.get(username=request.user).email
-            new_email = current_user.email
 
-            if existing_email != new_email:
+            _send_verification_email(request, current_user, current_user.email)
 
-                _send_verification_email(request, current_user, new_email)
-
-                return render(request, "registration/email_verification.html", context={"result": "sent"})
-
-            else:
-                messages.add_message(request, messages.ERROR, "Cannot update the same details")
+            return render(request, "registration/email_verification.html", context={"result": "sent"})
 
         else:
             messages.add_message(request, messages.ERROR, "Couldn't update the user")
-            
 
     form = UpdateUserForm(instance=current_user)
     context = {"form": form}

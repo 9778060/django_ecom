@@ -40,7 +40,16 @@ class UpdateUserForm(forms.ModelForm):
         fields = ["email"]
         exclude = ["username", "password"]
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["email"].required = True
 
+
+    def clean_email(self):
+        email = self.cleaned_data.get("email")
+
+        if User.objects.filter(email=email, pk=self.instance.pk).exists():
+            raise forms.ValidationError("Cannot update the same details")
+
+        return email
