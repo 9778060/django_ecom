@@ -98,6 +98,8 @@ def register(request):
 
             _send_verification_email(request, user, user.email, registration_verification=True)
 
+            messages.add_message(request, messages.SUCCESS, "Registered successfully")
+
             return render(request, "registration/email_verification.html", context={"result": "sent"})
         else:
             messages.add_message(request, messages.ERROR, "Couldn't register the user")
@@ -146,13 +148,13 @@ def email_verification(request, uidb64, uemailb64, token):
                     user_found.is_active = True
 
                 user_found.save()
+
         except Exception as exc:
             return render(request, "registration/email_verification.html", context={"result": "fail"})
 
         return render(request, "registration/email_verification.html", context={"result": "success"})
     else:
         return render(request, "registration/email_verification.html", context={"result": "fail"})
-
 
 
 def login(request):
@@ -171,6 +173,8 @@ def login(request):
             if user and user.is_active and not user.is_staff and not user.is_superuser:
                 auth.login(request, user)
 
+                messages.add_message(request, messages.SUCCESS, "Logged in successfully")
+
                 return redirect("dashboard")
         
         messages.add_message(request, messages.ERROR, "Couldn't authenticate the user")
@@ -182,7 +186,12 @@ def login(request):
 
 
 def logout(request):
+
+    temp_session_details = request.session.get("session_details")
     auth.logout(request)
+    request.session["session_details"] = temp_session_details
+
+    messages.add_message(request, messages.SUCCESS, "Logged out successfully")
 
     return redirect("index")
 
@@ -206,6 +215,8 @@ def profile_management(request):
 
             _send_verification_email(request, current_user, current_user.email)
 
+            messages.add_message(request, messages.SUCCESS, "User data updated successfully")
+
             return render(request, "registration/email_verification.html", context={"result": "sent"})
 
         else:
@@ -226,6 +237,8 @@ def delete_account(request):
         current_user.is_active = False
         current_user.save()
 
+        messages.add_message(request, messages.SUCCESS, "User has been deleted successfully")
+
         return render(request, "delete_account.html", context={"result": "success"})
     except Exception as exc:
         return render(request, "delete_account.html", context={"result": "fail"})
@@ -244,7 +257,7 @@ def forgot_your_password(request):
             email = forgot_your_password_form.cleaned_data.get("email")
 
             _send_password_reset_email(request, email)
-
+            
             return render(request, "password_reset/password_reset.html", context={"result": "sent"})
 
         else:
