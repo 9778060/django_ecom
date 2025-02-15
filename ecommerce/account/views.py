@@ -256,26 +256,6 @@ def forgot_your_password(request):
     return render(request, "password_reset/forgot_your_password.html", context=context)
 
 
-# @user_passes_test(lambda user: not user.is_authenticated, login_url="dashboard")
-# def password_reset(request, uidb64, uemailb64, token):
-#     try:
-#         uid = force_str(urlsafe_base64_decode(uidb64))
-#         uemail = force_str(urlsafe_base64_decode(uemailb64))
-#     except Exception as exc:
-#         return render(request, "password_reset/password_reset.html", context={"result": "fail"})
-
-#     try:
-#         user_found = get_object_or_404(User, pk=uid, email=uemail, is_active=True, is_staff=False, is_superuser=False)
-#         password_reset_record = PasswordResetEmails.objects.filter(email=user_found.email, reset=False, valid=True, user_id=user_found.pk).order_by("-date_sent")[:1].get()
-#     except Exception as exc:
-#         return render(request, "password_reset/password_reset.html", context={"result": "fail"})
-
-#     if user_found and password_reset_record and user_tokenizer.check_token(user=user_found, token=token):
-#         return redirect("password_change", uidb64, uemailb64, token)
-#     else:
-#         return render(request, "password_reset/password_reset.html", context={"result": "fail"})
-
-    
 @user_passes_test(lambda user: not user.is_authenticated, login_url="dashboard")
 def password_change(request, uidb64, uemailb64, token):
 

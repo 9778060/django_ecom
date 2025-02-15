@@ -13,8 +13,7 @@
         <hr>
         <form method="POST" autocomplete="off">
             {% csrf_token %}
-            {{ form.username|as_crispy_field }}
-            {{ form.password|as_crispy_field }}
+            {{ form|crispy }}
             <div class="d-grid gap-2">
                 <button type="submit" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Login</button>
             </div>
