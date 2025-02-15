@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import CreateUserForm, LoginForm, UpdateUserForm, ForgotPasswordUserForm
+from .forms import CreateUserForm, LoginForm, UpdateUserForm, ForgotPasswordUserForm, PasswordResetUserForm
 from django.contrib.sites.shortcuts import get_current_site
 from .token import user_tokenizer
 from django.template.loader import render_to_string
@@ -11,7 +11,50 @@ from django.http import Http404, JsonResponse
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
-from .models import UserEmails
+from .models import UserEmails, PasswordResetEmails
+from time import sleep
+
+
+def _send_password_reset_email(request, email):
+
+    try:
+        user_found = get_object_or_404(User, email=email, is_active=True, is_staff=False, is_superuser=False)
+    except Exception as exc:
+        sleep(1)
+        return
+
+    try:
+        password_reset_records = PasswordResetEmails.objects.filter(email=user_found.email, reset=False, user_id=user_found.pk).order_by("-date_sent")
+        if password_reset_records:
+            for record in password_reset_records:
+                record.valid = False
+                record.save()
+    except Exception as exc:
+        pass
+
+    new_record = PasswordResetEmails()
+    new_record.user = user_found
+    new_record.email = email
+    new_record.reset = False
+    new_record.save()
+    
+    subject = "Password reset email"
+    context = {
+        "user": user_found,
+        "domain": get_current_site(request).domain,
+        "uid": urlsafe_base64_encode(force_bytes(user_found.pk)),
+        "uemail": urlsafe_base64_encode(force_bytes(email)),
+        "token": user_tokenizer.make_token(user_found)
+    }
+    message = render_to_string("password_reset/password_reset_message.html", context=context)
+
+    send_mail(
+        subject=subject,
+        message=message,
+        from_email=None,
+        recipient_list=[email],
+        fail_silently=True,
+    )
 
 
 def _send_verification_email(request, user, email, *, registration_verification=False):
@@ -73,36 +116,36 @@ def email_verification(request, uidb64, uemailb64, token):
         return render(request, "registration/email_verification.html", context={"result": "fail"})
 
     try:
-        user = get_object_or_404(User, pk=uid, email=uemail, is_active=False, is_staff=False, is_superuser=False)
+        user_found = get_object_or_404(User, pk=uid, email=uemail, is_active=False, is_staff=False, is_superuser=False)
     except Exception as exc:
         try:
-            user = get_object_or_404(User, pk=uid, is_active=True, is_staff=False, is_superuser=False)
-            user_email_record = UserEmails.objects.filter(email=uemail, verified=False, user_id=user.pk)
+            user_found = get_object_or_404(User, pk=uid, is_active=True, is_staff=False, is_superuser=False)
+            user_email_record = UserEmails.objects.filter(email=uemail, verified=False, user_id=user_found.pk)
 
             if not user_email_record:
                 return render(request, "registration/email_verification.html", context={"result": "fail"})    
         except Exception as exc:
             return render(request, "registration/email_verification.html", context={"result": "fail"})
 
-    if user and user_tokenizer.check_token(user=user, token=token):
+    if user_found and user_tokenizer.check_token(user=user_found, token=token):
         try:
             not_unique_email_check = User.objects.filter(email=uemail, is_active=True, is_staff=False, is_superuser=False)
 
             if not_unique_email_check:
                 return render(request, "registration/email_verification.html", context={"result": "fail"})
 
-            user_email_record = UserEmails.objects.filter(email=uemail, verified=False, user_id=user.pk).order_by("-date_sent")[:1].get()
+            user_email_record = UserEmails.objects.filter(email=uemail, verified=False, user_id=user_found.pk).order_by("-date_sent")[:1].get()
 
             if user_email_record:
                 user_email_record.verified = True
                 user_email_record.save()
 
-                user.email = uemail
+                user_found.email = uemail
 
                 if user_email_record.registration_verification:
-                    user.is_active = True
+                    user_found.is_active = True
 
-                user.save()
+                user_found.save()
         except Exception as exc:
             return render(request, "registration/email_verification.html", context={"result": "fail"})
 
@@ -198,7 +241,9 @@ def forgot_your_password(request):
 
         if forgot_your_password_form.is_valid():
 
-            # _send_verification_email(request, current_user, current_user.email)
+            email = forgot_your_password_form.cleaned_data.get("email")
+
+            _send_password_reset_email(request, email)
 
             return render(request, "password_reset/password_reset.html", context={"result": "sent"})
 
@@ -209,3 +254,71 @@ def forgot_your_password(request):
     context = {"form": form}
 
     return render(request, "password_reset/forgot_your_password.html", context=context)
+
+
+# @user_passes_test(lambda user: not user.is_authenticated, login_url="dashboard")
+# def password_reset(request, uidb64, uemailb64, token):
+#     try:
+#         uid = force_str(urlsafe_base64_decode(uidb64))
+#         uemail = force_str(urlsafe_base64_decode(uemailb64))
+#     except Exception as exc:
+#         return render(request, "password_reset/password_reset.html", context={"result": "fail"})
+
+#     try:
+#         user_found = get_object_or_404(User, pk=uid, email=uemail, is_active=True, is_staff=False, is_superuser=False)
+#         password_reset_record = PasswordResetEmails.objects.filter(email=user_found.email, reset=False, valid=True, user_id=user_found.pk).order_by("-date_sent")[:1].get()
+#     except Exception as exc:
+#         return render(request, "password_reset/password_reset.html", context={"result": "fail"})
+
+#     if user_found and password_reset_record and user_tokenizer.check_token(user=user_found, token=token):
+#         return redirect("password_change", uidb64, uemailb64, token)
+#     else:
+#         return render(request, "password_reset/password_reset.html", context={"result": "fail"})
+
+    
+@user_passes_test(lambda user: not user.is_authenticated, login_url="dashboard")
+def password_change(request, uidb64, uemailb64, token):
+
+    try:
+        uid = force_str(urlsafe_base64_decode(uidb64))
+        uemail = force_str(urlsafe_base64_decode(uemailb64))
+    except Exception as exc:
+        return render(request, "password_reset/password_reset.html", context={"result": "fail"})
+
+    try:
+        user_found = get_object_or_404(User, pk=uid, email=uemail, is_active=True, is_staff=False, is_superuser=False)
+        password_reset_record = PasswordResetEmails.objects.filter(email=user_found.email, reset=False, valid=True, user_id=user_found.pk).order_by("-date_sent")[:1].get()
+    except Exception as exc:
+        return render(request, "password_reset/password_reset.html", context={"result": "fail"})
+
+    valid_token = user_tokenizer.check_token(user=user_found, token=token)
+    if not valid_token:
+        return render(request, "password_reset/password_reset.html", context={"result": "fail"})
+
+    password_reset_form = PasswordResetUserForm(user_found)
+
+    if user_found and password_reset_record and valid_token:
+
+        if request.method == "POST":
+            password_reset_form = PasswordResetUserForm(user_found, request.POST)
+
+            if password_reset_form.is_valid():
+                try:
+                    password_reset_form.save()
+
+                    password_reset_record.reset = True
+                    password_reset_record.valid = False
+                    password_reset_record.save()
+
+                except Exception as exc:
+                    return render(request, "password_reset/password_reset.html", context={"result": "fail"})
+
+                return render(request, "password_reset/password_reset.html", context={"result": "success"})                
+
+            else:
+                messages.add_message(request, messages.ERROR, "Password cannot be reset")
+
+    form = password_reset_form
+    context = {"form": form}
+
+    return render(request, "password_reset/password_reset_passwords.html", context=context)

@@ -1,4 +1,4 @@
-from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, SetPasswordForm
 from django.contrib.auth.models import User
 from django import forms
 from django.forms.widgets import PasswordInput, TextInput
@@ -66,3 +66,17 @@ class ForgotPasswordUserForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields["email"].required = True
+
+
+class PasswordResetUserForm(SetPasswordForm):
+   
+    class Meta:
+        model = User
+        fields = ["new_password1", "new_password2"]
+        exclude = ["username", "email"]
+
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields["new_password1"].required = True
+        self.fields["new_password2"].required = True
