@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Checkout</h1>
+{% endblock %} 
+
+{% block body %}
+<body class="bg-light">
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h4>Manage shipping</h4>
+        <hr>
+        <form method="POST" autocomplete="off">
+            {% if user.is_authenticated %}
+            <h5>Full name:</h5>
+            <p>{{ user.first_name }} {{ user.last_name }}</p>
+            <h5>Email:</h5>
+            <p>{{ user.email }}</p>
+            <hr>
+            {% endif %}
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Complete order</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+{% endblock %}

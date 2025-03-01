@@ -8,7 +8,7 @@ class CreateUserForm(UserCreationForm):
    
     class Meta:
         model = User
-        fields = ["username", "email", "password1", "password2"]
+        fields = ["username", "email", "password1", "password2", "first_name", "last_name"]
 
 
     def __init__(self, *args, **kwargs):
@@ -37,7 +37,7 @@ class UpdateUserForm(forms.ModelForm):
     
     class Meta:
         model = User
-        fields = ["email"]
+        fields = ["email", "first_name", "last_name"]
         exclude = ["username", "password"]
 
 
@@ -49,11 +49,12 @@ class UpdateUserForm(forms.ModelForm):
     def clean_email(self):
         email = self.cleaned_data.get("email")
 
-        if User.objects.filter(email=email, pk=self.instance.pk).exists():
-            raise forms.ValidationError("Cannot update the same details")
+        # if User.objects.filter(email=email, pk=self.instance.pk).exists():
+        #     raise forms.ValidationError("Cannot update the same details")
 
         return email
     
+   
 
 class ForgotPasswordUserForm(forms.ModelForm):
     

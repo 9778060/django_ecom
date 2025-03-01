@@ -56,7 +56,9 @@
         <div class="col-12 text-end">
             <div class="h6 fw-bold"> Sub total: $ <div id="total" class="d-inline-flex">{{ cart.cart_total_amount }}</div></div>
         </div>
-
+        <div class="col-12 text-end">
+            <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'checkout' %}" class="btn btn-dark" style="background-color: #63E6BE; color:black">Checkout</a></p>
+        </div>
     </div>
 </main>
 <script>

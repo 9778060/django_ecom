@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% load crispy_forms_tags %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Manage shipping</h1>
+{% endblock %} 
+
+{% block body %}
+<body class="bg-light">
+    <div class="container bg-white shadow-md p-5 form-layout">
+        <h4>Manage shipping</h4>
+        <hr>
+        <form method="POST" autocomplete="off">
+            {% csrf_token %}
+            {{ form|crispy }}
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Update</button>
+            </div>
+        </form>
+    </div>
+</body>
+
+{% endblock %}

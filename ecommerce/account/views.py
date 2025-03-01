@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import CreateUserForm, LoginForm, UpdateUserForm, ForgotPasswordUserForm, PasswordResetUserForm
+from payment.forms import ShippingForm
 from django.contrib.sites.shortcuts import get_current_site
 from .token import user_tokenizer
 from django.template.loader import render_to_string
@@ -12,6 +13,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import UserEmails, PasswordResetEmails
+from payment.models import ShippingAddress
 from time import sleep
 
 
@@ -85,6 +87,7 @@ def _send_verification_email(request, user, email, *, registration_verification=
     )
 
 
+@user_passes_test(lambda user: not user.is_authenticated, login_url="dashboard")
 def register(request):
 
     form = CreateUserForm()
@@ -157,6 +160,7 @@ def email_verification(request, uidb64, uemailb64, token):
         return render(request, "registration/email_verification.html", context={"result": "fail"})
 
 
+@user_passes_test(lambda user: not user.is_authenticated, login_url="dashboard")
 def login(request):
     form = LoginForm()
 
@@ -185,6 +189,8 @@ def login(request):
     return render(request, "login.html", context=context)
 
 
+@user_passes_test(lambda user: user.is_active and not user.is_staff and not user.is_superuser, login_url="login")
+@login_required(login_url="login")
 def logout(request):
 
     temp_session_details = request.session.get("session_details")
@@ -207,17 +213,28 @@ def dashboard(request):
 def profile_management(request):
 
     current_user = User.objects.get(username=request.user)
+    existing_email = current_user.email
     
     if request.method == "POST":
-        update_form = UpdateUserForm(request.POST, instance=current_user)
+        update_form_email = UpdateUserForm(request.POST, instance=current_user)
 
-        if update_form.is_valid():
+        if update_form_email.is_valid():
 
-            _send_verification_email(request, current_user, current_user.email)
+            if existing_email != current_user.email:
+
+                new_email = current_user.email
+
+                current_user.email = existing_email
+                current_user.save()
+
+                _send_verification_email(request, current_user, new_email)
+
+                return render(request, "registration/email_verification.html", context={"result": "sent"})
+            else:
+                current_user.email = existing_email
+                current_user.save()
 
             messages.add_message(request, messages.SUCCESS, "User data updated successfully")
-
-            return render(request, "registration/email_verification.html", context={"result": "sent"})
 
         else:
             messages.add_message(request, messages.ERROR, "Couldn't update the user")
@@ -315,3 +332,34 @@ def password_change(request, uidb64, uemailb64, token):
     context = {"form": form}
 
     return render(request, "password_reset/password_reset_passwords.html", context=context)
+
+
+
+@user_passes_test(lambda user: user.is_active and not user.is_staff and not user.is_superuser, login_url="login")
+@login_required(login_url="login")
+def manage_shipping(request):
+
+    try:
+        shipping_address = ShippingAddress.objects.filter(user=request.user.id).order_by("-date_created")[:1].get()
+    except Exception as exc:
+        shipping_address = None
+
+    shipping_address_form = ShippingForm(instance=shipping_address)
+
+    if request.method == "POST":
+        shipping_address_form = ShippingForm(request.POST, instance=shipping_address)
+
+        if shipping_address_form.is_valid():
+
+            shipping_address_form.instance.user = request.user
+            shipping_address_form.save()
+            
+            return redirect("dashboard")
+
+        else:
+            messages.add_message(request, messages.ERROR, "Unable to update shipping address")
+
+    form = shipping_address_form
+    context = {"form": form}
+
+    return render(request, "manage_shipping.html", context=context)

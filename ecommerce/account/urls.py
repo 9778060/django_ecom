@@ -12,4 +12,5 @@ urlpatterns = [
     path("forgot_your_password/", views.forgot_your_password, name="forgot_your_password"),
     path("password_change/<str:uidb64>/<str:uemailb64>/<str:token>/", views.password_change, name="password_change"),
     path("logout/", views.logout, name="logout"),
+    path("manage_shipping/", views.manage_shipping, name="manage_shipping"),
 ]
