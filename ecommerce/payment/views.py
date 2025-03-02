@@ -21,7 +21,7 @@ def checkout(request):
 
         if shipping_address_form.is_valid():
 
-            if request.user and request.user.is_authenticated:
+            if request.user and request.user.is_authenticated and shipping_address_form.changed_data:
                 shipping_address_form.instance.user = request.user
                 shipping_address_form.save()
             

@@ -220,8 +220,7 @@ def profile_management(request):
 
         if update_form_email.is_valid():
 
-            if existing_email != current_user.email:
-
+            if "email" in update_form_email.changed_data:
                 new_email = current_user.email
 
                 current_user.email = existing_email
@@ -230,8 +229,8 @@ def profile_management(request):
                 _send_verification_email(request, current_user, new_email)
 
                 return render(request, "registration/email_verification.html", context={"result": "sent"})
-            else:
-                current_user.email = existing_email
+            
+            elif update_form_email.changed_data:
                 current_user.save()
 
             messages.add_message(request, messages.SUCCESS, "User data updated successfully")
