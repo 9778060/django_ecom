@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Complete order</h1>
+{% endblock %} 
+
+{% block body %}
+<main class="pt-5">
+    <div class="container">
+        <hr>
+        <br>
+        {% for item in cart %}
+            {% with product=item.product %}
+            <div class="row mb-4 border product-item">
+                <div class="col-md-3 col-lg-2 order-md-first bg-light">
+                    <img class="img-fluid mx-auto d-block" width="200px" alt="Responsive image" src="{{ product.image.url }}">
+                </div>
+                
+                <div class="col-md-9 col-lg-10 ps-md-3 ps-lg-10">
+                    <a href="{{ product.url }}" class="text-decoration-none text-reset">
+                        <h1 class="h5 pt-2">{{ product.title }}</h1>
+                    </a>
+                    <div class="border">
+                        <div class="col border-bottom">
+                            <div class="row p-3">
+                                <div class="col-6">Product</div>
+                                <div class="col-6 text-end"><span class="h6 fw-bold">$ {{ product.price }} (price) * {{ item.qty }} (quantity) = $ {{ item.total }} (total)</span></div>
+                            </div>
+                        </div>
+                        <div class="col">
+                            <div class="row p-3">
+                                <div class="col-12">
+                                    <label for="select">Qty</label>
+                                    <p>{{ item.qty }}</p>
+                                    <br>
+                                    <br>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endwith %}
+        {% endfor %}
+        {% if cart %}
+            <div class="col-12 text-end">
+                <div class="h6 fw-bold"> Sub total: $ <div id="total" class="d-inline-flex">{{ cart.cart_total_amount }}</div></div>
+            </div>
+            <form id="form">
+                <div class="col-12 text-end">
+                    <button id="complete-order" type="submit" class="btn btn-dark" style="background-color: #63E6BE; color:black">Complete payment</button>
+                </div>
+            </form>
+        {% else %}
+            <div class="col-12 text-start">
+                <div class="h6 fw-bold pb-2 mb-1"> The cart is empty</div>
+            </div>            
+        {% endif %}            
+    </div>
+</main>
+<script>
+    $(document).on("submit", function(e){
+        e.preventDefault();
+        $.ajax({
+            type: "POST",
+            url: "{% url 'complete_order' %}",
+            data: {
+                
+                full_name: "{{ full_name }}",
+                email: "{{ email }}",
+                address1: "{{ form.address1.value }}",
+                address2: "{{ form.address2.value }}",
+                city: "{{ form.city.value }}",
+                state: "{{ form.state.value }}",
+                zipcode: "{{ form.zipcode.value }}",
+                country: "{{ form.country.value }}",
+
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                action: "post"
+            },
+            success: function(json){
+                // console.log(json);
+                location.reload(true);
+            },
+            error: function(xhr, errmsg, err){
+                
+            },
+        });
+    })    
+</script>
+{% endblock %}

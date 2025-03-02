@@ -12,13 +12,14 @@
         <h4>Manage shipping</h4>
         <hr>
         <form method="POST" autocomplete="off">
-            {% if user.is_authenticated %}
-            <h5>Full name:</h5>
-            <p>{{ user.first_name }} {{ user.last_name }}</p>
-            <h5>Email:</h5>
-            <p>{{ user.email }}</p>
-            <hr>
-            {% endif %}
+            <div class="form-group mb-3">
+                <label for="full_name" class="form-label requiredField"> Full name<span class="asteriskField">*</span></label>
+                <input class="form-control validate" id="full_name" name="full_name" type="text" required {% if user.is_authenticated %} value="{{ user.first_name }} {{ user.last_name }}" readonly {% else %} value="" {% endif %}>
+            </div>
+            <div class="form-group mb-3">
+                <label for="email" class="form-label requiredField"> Email address<span class="asteriskField">*</span></label>
+                <input class="form-control validate" id="email" name="email" type="email" required {% if user.is_authenticated %} value="{{ user.email }}" readonly {% else %} value="" {% endif %}>
+            </div>            
             {% csrf_token %}
             {{ form|crispy }}
             <div class="d-grid gap-2">

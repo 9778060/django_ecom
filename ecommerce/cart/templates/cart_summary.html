@@ -50,15 +50,21 @@
             </div>
             {% endwith %}
         {% endfor %}
-        <div class="col-12 text-start">
-            <button type="button" id="delete-all" class="btn btn-danger btn-sm">Clear cart</button>
-        </div>            
-        <div class="col-12 text-end">
-            <div class="h6 fw-bold"> Sub total: $ <div id="total" class="d-inline-flex">{{ cart.cart_total_amount }}</div></div>
-        </div>
-        <div class="col-12 text-end">
-            <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'checkout' %}" class="btn btn-dark" style="background-color: #63E6BE; color:black">Checkout</a></p>
-        </div>
+        {% if cart %}
+            <div class="col-12 text-start">
+                <button type="button" id="delete-all" class="btn btn-danger btn-sm">Clear cart</button>
+            </div>            
+            <div class="col-12 text-end">
+                <div class="h6 fw-bold"> Sub total: $ <div id="total" class="d-inline-flex">{{ cart.cart_total_amount }}</div></div>
+            </div>
+            <div class="col-12 text-end">
+                <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'checkout' %}" class="btn btn-dark" style="background-color: #63E6BE; color:black">Checkout</a></p>
+            </div>
+        {% else %}
+            <div class="col-12 text-start">
+                <div class="h6 fw-bold pb-2 mb-1"> The cart is empty</div>
+            </div>            
+        {% endif %}
     </div>
 </main>
 <script>
