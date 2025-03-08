@@ -4,6 +4,9 @@ from payment.models import ShippingAddress, Order, OrderItem
 from payment.forms import ShippingForm
 from django.contrib import messages
 from cart.cart import Cart
+from django.db import transaction
+from decimal import Decimal
+from django.http import JsonResponse
 
 
 
@@ -73,20 +76,38 @@ def complete_order(request):
 
         user = request.user if request.user.is_authenticated else None
 
-        order = Order.objects.create(
-            full_name=full_name,
-            email=email,
-            shipping_address=shipping_address,
-            amount_paid=amount_to_pay,
-            user=user
-        )
+        try:
+            with transaction.atomic():
+                order = Order.objects.create(
+                    full_name=full_name,
+                    email=email,
+                    shipping_address=shipping_address,
+                    amount_paid=amount_to_pay,
+                    user=user
+                )
 
+                for item in cart:
+                    order_item = OrderItem.objects.create(
+                        quantity=item.get("qty", 1),
+                        price=Decimal(item.get("total", 0)),
+                        order=order,
+                        product=item.get("product")
+                    )                    
+
+        except Exception as exc:
+            print(f"Error: {exc}")
+
+        return JsonResponse({"success": True})
 
     return redirect("dashboard")
     
 
 
 def payment_success(request):
+
+    existing_cart = Cart(request)
+    existing_cart.delete_from_cart()    
+
     return render(request, "payment_success.html")
 
 

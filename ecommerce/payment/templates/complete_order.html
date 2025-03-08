@@ -80,10 +80,10 @@
             },
             success: function(json){
                 // console.log(json);
-                location.reload(true);
+                window.location.replace("{% url 'payment_success' %}");
             },
             error: function(xhr, errmsg, err){
-                
+                window.location.replace("{% url 'payment_fail' %}");
             },
         });
     })    
