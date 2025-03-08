@@ -78,12 +78,12 @@
                 csrfmiddlewaretoken: "{{ csrf_token }}",
                 action: "post"
             },
-            success: function(json){
-                // console.log(json);
-                window.location.replace("{% url 'payment_success' %}");
+            success: function(data){
+                // console.log(data);
+                document.documentElement.innerHTML = data; // Replace page content
             },
             error: function(xhr, errmsg, err){
-                window.location.replace("{% url 'payment_fail' %}");
+                document.documentElement.innerHTML = xhr; // Replace page content
             },
         });
     })    

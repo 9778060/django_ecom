@@ -13,7 +13,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import UserEmails, PasswordResetEmails
-from payment.models import ShippingAddress
+from payment.models import ShippingAddress, Order, OrderItem
 from time import sleep
 
 
@@ -362,3 +362,20 @@ def manage_shipping(request):
     context = {"form": form}
 
     return render(request, "manage_shipping.html", context=context)
+
+
+@user_passes_test(lambda user: user.is_active and not user.is_staff and not user.is_superuser, login_url="login")
+@login_required(login_url="login")
+def track_orders(request):
+
+    context = {}
+
+    try:
+        orders = Order.objects.filter(user=request.user)
+        order_items = OrderItem.objects.filter(order__in=orders).select_related("product")
+
+        context = {"orders": orders, "order_items": order_items}
+    except Exception as exc:
+        pass
+
+    return render(request, "track_orders.html", context=context)

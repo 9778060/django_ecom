@@ -3,6 +3,13 @@ from django.contrib.auth.models import User
 from store.models import Product
 
 
+class Statuses(models.IntegerChoices):
+    PENDING = 1, "Pending"
+    COMPLETED = 2, "Completed"
+    CANCELLED = 3, "Cancelled"
+
+   
+
 class ShippingAddress(models.Model):
 
     id = models.AutoField(primary_key=True)
@@ -31,13 +38,14 @@ class Order(models.Model):
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True, blank=True)
     date_ordered = models.DateTimeField(auto_now_add=True)
+    status = models.IntegerField(choices=Statuses.choices, default=Statuses.PENDING)
 
     class Meta:
         verbose_name_plural = "orders"
 
     def __str__(self):
-        return f"Order #{self.id}: {self.full_name}, {self.email}, {self.amount_paid}"
-
+        return f"Order #{self.id}: {self.full_name}, {self.email}, {self.amount_paid}, {self.status}"
+    
 
 class OrderItem(models.Model):
 

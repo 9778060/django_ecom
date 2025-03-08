@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% load custom_filters %}
+
+{% block title %}
+    <h1 class="nt-4 my-4">Track orders</h1>
+{% endblock %} 
+
+{% block body %}
+<body class="bg-light">
+    {% if user.is_authenticated %}
+    <div class="container bg-white shadow-md p-5 form-layout mb-4">
+        <h4>My orders</h4>
+        <hr>
+    </div>
+    <div class="container bg-white shadow-md p-5 form-layout mb-4">
+        
+        {% for order in orders %}
+            <p>Order #{{ order.id }} (date: {{ order.date_ordered }}; amount: {{ order.amount_paid }}; status: {{ order.get_status_display }}):</p>
+            <ul>
+            {% for order_item in order_items|filter_order_item_by_order_id:order.id %}
+                <li>{{ order_item.product }} x {{ order_item.quantity }} = {{ order_item.price }}</li>
+            {% endfor %}    
+            </ul>
+            <hr>
+        {% endfor %}
+        
+    </div>
+    <div class="container form-layout">
+        <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'dashboard' %}" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Go back</a></p>
+    </div>        
+    {% endif %}
+</body>
+{% endblock %}

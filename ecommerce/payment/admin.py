@@ -14,12 +14,12 @@ class ShippingAddressAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class OrderAdmin(admin.ModelAdmin):
-    list_display = ("full_name", "email", "shipping_address", "amount_paid", "user", "date_ordered")
+    list_display = ("full_name", "email", "shipping_address", "amount_paid", "user", "date_ordered", "status")
     list_display_links = ("full_name", )
     readonly_fields = ("id", "date_ordered")
-    fields = ("id", "full_name", "email", "shipping_address", "amount_paid", "user", "date_ordered")
+    fields = ("id", "full_name", "email", "shipping_address", "amount_paid", "user", "date_ordered", "status")
     search_fields = ("full_name", "email", "shipping_address")
-    list_filter = ("full_name", "email", "shipping_address", "amount_paid", "user", "date_ordered")
+    list_filter = ("full_name", "email", "shipping_address", "amount_paid", "user", "date_ordered", "status")
 
 
 @admin.register(OrderItem)

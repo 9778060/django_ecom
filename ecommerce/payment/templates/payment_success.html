@@ -5,8 +5,11 @@
 {% endblock %} 
 
 {% block body %}
-<main class="pt-5">
-    <div class="container">
+<body class="bg-light">
+    <div class="container bg-white shadow-md p-5 form-layout text-center">
+        <i class="fa fa-check fa-3x pb-4 text-success" aria-hidden="true"></i>
+        <h4>Payment succeeded!</h4>
+        <p class="pt-2 mb-1"><a type="button" role="button" href="{% url 'index' %}" class="btn btn-dark my-2" style="background-color: #63E6BE; color:black">Go back</a></p>        
     </div>
-</main>
+</body>
 {% endblock %}

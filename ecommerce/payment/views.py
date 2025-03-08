@@ -6,7 +6,7 @@ from django.contrib import messages
 from cart.cart import Cart
 from django.db import transaction
 from decimal import Decimal
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 
 
 
@@ -96,20 +96,9 @@ def complete_order(request):
 
         except Exception as exc:
             print(f"Error: {exc}")
-
-        return JsonResponse({"success": True})
+            return render(request, "payment_fail.html", context={})
+        
+        cart.delete_from_cart()    
+        return render(request, "payment_success.html", context={})
 
     return redirect("dashboard")
-    
-
-
-def payment_success(request):
-
-    existing_cart = Cart(request)
-    existing_cart.delete_from_cart()    
-
-    return render(request, "payment_success.html")
-
-
-def payment_fail(request):
-    return render(request, "payment_fail.html")
