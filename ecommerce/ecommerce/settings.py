@@ -32,7 +32,7 @@ DEBUG = False
 
 ALLOWED_HOSTS = ["*"]
 
-# CSRF_TRUSTED_ORIGINS = [""]
+CSRF_TRUSTED_ORIGINS = ["http://ecommerce-dev.eu-north-1.elasticbeanstalk.com/"]
 
 # Application definition
 
