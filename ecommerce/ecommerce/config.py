@@ -20,6 +20,7 @@ class GlobalConfig(BaseConfig):
     PORT: Optional[str] = None
     DATABASE: Optional[str] = None
     DB_FORCE_ROLL_BACK: bool = False
+    HTTP: Optional[str] = None
 
 class DevConfig(GlobalConfig):
     model_config = SettingsConfigDict(env_prefix="DEV_", extra="ignore")

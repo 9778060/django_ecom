@@ -15,6 +15,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from .models import UserEmails, PasswordResetEmails
 from payment.models import ShippingAddress, Order, OrderItem
 from time import sleep
+import os
+from ecommerce.config import config
 
 
 def _send_password_reset_email(request, email):
@@ -43,7 +45,7 @@ def _send_password_reset_email(request, email):
     subject = "Password reset email"
     context = {
         "user": user_found,
-        "domain": get_current_site(request).domain,
+        "domain": config.HTTP + get_current_site(request).domain,
         "uid": urlsafe_base64_encode(force_bytes(user_found.pk)),
         "uemail": urlsafe_base64_encode(force_bytes(email)),
         "token": user_tokenizer.make_token(user_found)
@@ -71,7 +73,7 @@ def _send_verification_email(request, user, email, *, registration_verification=
     subject = "Account verification email"
     context = {
         "user": user,
-        "domain": get_current_site(request).domain,
+        "domain": config.HTTP + get_current_site(request).domain,
         "uid": urlsafe_base64_encode(force_bytes(user.pk)),
         "uemail": urlsafe_base64_encode(force_bytes(email)),
         "token": user_tokenizer.make_token(user)
