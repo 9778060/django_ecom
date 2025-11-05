@@ -29,7 +29,7 @@ Stack: Django, OOP, PostgreSQL, JSON
 Notes
 =====
 
-1. Main applications is located in ecommerce folder
+1. Main application is located in ecommerce folder
 2. Modules:
 
    • Account - user management
